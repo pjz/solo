@@ -30,9 +30,13 @@ name = main
 .PHONY: all
 all: python-fido2 main
 
+ifneq ($(TEST),)
+CFLAGS += -Wall -Werror
+endif
+
 .PHONY: test
 test: 
-	$(MAKE) -C . main
+	$(MAKE) -C . main TEST=1
 	$(MAKE) -C . testgcm
 	./testgcm
 
