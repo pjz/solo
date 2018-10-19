@@ -39,8 +39,6 @@ static CTAP_RESPONSE * _u2f_resp = NULL;
 void u2f_request(struct u2f_request_apdu* req, CTAP_RESPONSE * resp)
 {
     uint16_t rcode = 0;
-    uint64_t t1,t2;
-    uint32_t len = ((req->LC3) | ((uint32_t)req->LC2 << 8) | ((uint32_t)req->LC1 << 16));
     uint8_t byte;
 
     _u2f_resp = resp;
@@ -52,11 +50,14 @@ void u2f_request(struct u2f_request_apdu* req, CTAP_RESPONSE * resp)
         goto end;
     }
 #ifdef ENABLE_U2F_EXTENSIONS
+    uint32_t len = ((req->LC3) | ((uint32_t)req->LC2 << 8) | ((uint32_t)req->LC1 << 16));
     rcode = extend_u2f(req, len);
 #endif
     if (rcode != U2F_SW_NO_ERROR)       // If the extension didn't do anything...
     {
 #ifdef ENABLE_U2F
+        uint64_t t1,t2;
+
         switch(req->ins)
         {
             case U2F_REGISTER:
@@ -191,7 +192,7 @@ static int8_t u2f_appid_eq(struct u2f_key_handle * kh, uint8_t * appid)
 
 
 
-static int16_t u2f_authenticate(struct u2f_authenticate_request * req, uint8_t control)
+static int16_t __attribute__((unused)) u2f_authenticate(struct u2f_authenticate_request * req, uint8_t control)
 {
 
     uint8_t up = 1;
@@ -249,7 +250,7 @@ static int16_t u2f_authenticate(struct u2f_authenticate_request * req, uint8_t c
     return U2F_SW_NO_ERROR;
 }
 
-static int16_t u2f_register(struct u2f_register_request * req)
+static int16_t __attribute__((unused)) u2f_register(struct u2f_register_request * req)
 {
     uint8_t i[] = {0x0,U2F_EC_FMT_UNCOMPRESSED};
 

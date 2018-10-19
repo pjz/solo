@@ -181,7 +181,6 @@ int ctap_user_verification(uint8_t arg)
 uint32_t ctap_atomic_count(int sel)
 {
     static uint32_t counter1 = 25;
-    static uint32_t counter2 = 25;
     /*return 713;*/
     if (sel == 0)
     {
@@ -203,12 +202,12 @@ int ctap_generate_rng(uint8_t * dst, size_t num)
         perror("fopen");
         exit(1);
     }
-    fread(dst, 1, num, urand);
+    size_t got = fread(dst, 1, num, urand);
     fclose(urand);
 
     /*memset(dst,0xaa,num);*/
 
-    return 1;
+    return got == num;
 }
 
 
@@ -305,7 +304,6 @@ int authenticator_is_backup_initialized()
     AuthenticatorState * state = (AuthenticatorState*) header;
     FILE * f;
     int ret;
-    uint8_t * mem;
 
     printf("state file exists\n");
     f = fopen(backup_file, "rb");
