@@ -1,4 +1,7 @@
 dist: trusty
+os:
+  - linux
+  - windows
 language: c
 compiler: gcc
 addons:
