@@ -67,17 +67,14 @@ $(name): $(obj) $(LIBCBOR)
 uECC.o: ./crypto/micro-ecc/uECC.c
 	$(CC) -c -o $@ $^ -O2 -fdata-sections -ffunction-sections -DuECC_PLATFORM=$(ecc_platform) -I./crypto/micro-ecc/
 
-env2:
-	virtualenv --python=python2.7 env2
-	env3/bin/pip --version
-	env2/bin/pip install -r tools/requirements.txt
-
-env3:
+env2: export PYTHON := python2.7
+env3: export PYTHON := python3.6
+env2 env3:
+	virtualenv --python=$(PYTHON) $@
+	$@/bin/pip --version
+	$@/bin/pip install -r tools/requirements.txt
 	# black requires >=py3.6
-	virtualenv --python=python3.6 env3 
-	env3/bin/pip --version
-	env3/bin/pip install -r tools/requirements.txt
-	env3/bin/pip install black
+	[ "$@" = "env3" ] && $@/bin/pip install black
 
 .PHONY: black blackcheck wink2 wink3 fido2-test cppcheck test clean
 # selectively reformat our own code
@@ -107,6 +104,6 @@ clean:
 	rm -rf env2 env3
 	for f in crypto/tiny-AES-c/Makefile tinycbor/Makefile ; do \
 	    if [ -f "$$f" ]; then \
-	    	(cd `dirname $$f` ; git checkout -- .) ;\
+	        (cd `dirname $$f` ; $(MAKE) clean ) ;\
 	    fi ;\
 	done
